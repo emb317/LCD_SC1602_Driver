@@ -1,4 +1,4 @@
-# SimpleDriver
+# LCD SC1602用のドライバ  
 
 ## SC1602
 LCD SC1602用のドライバ  
