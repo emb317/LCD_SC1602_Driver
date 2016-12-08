@@ -1,6 +1,6 @@
 
 // MODULE:
-//  SC1602_BBWB-XA-LB-G
+//  SC1602BS-B(-XA-GB-K)
 
 #include "sc1602.h"
 

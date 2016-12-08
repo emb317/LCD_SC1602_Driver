@@ -47,8 +47,8 @@ typedef struct SC1602_PORT
 
 const static SC1602_PORT SC1602[SC1602_PORT_NUM]=
 {
-	{ &PM5,  &P5, 4, {0} }, // E	P54
-	{ &PM5,  &P5, 5, {0} }, // RS	P55
+	{ &PM5,  &P5, 5, {0} }, // E	P55
+	{ &PM5,  &P5, 4, {0} }, // RS	P54
 	{ &PM5,  &P5, 3, {0} }, // DB4	P53
 	{ &PM5,  &P5, 2, {0} }, // DB5	P52
 	{ &PM5,  &P5, 1, {0} }, // DB6	P51
