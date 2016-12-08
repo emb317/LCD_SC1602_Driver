@@ -5,3 +5,5 @@ Debug
 *.launch
 .cproject
 .project
+*.mtud
+DefaultBuild

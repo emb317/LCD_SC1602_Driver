@@ -1,28 +1,29 @@
 
 #include "sc1602.h"
 
-#ifdef __USE_CMSIS
-#include "LPC11xx.h"
-#endif
+// RL78/G13 Stick
+// R5F100LEAFA
 
-#include "sys_timer.h"
+#include "iodefine.h"
 
-void SC1602_WaitUs(uint8_t t) __attribute__ ((naked));
 void SC1602_WaitUs(uint8_t t)
 {
-	asm("	MOV r1, #6	");
-	asm("	MUL r0, r1	");
-	asm("1:				");
-	asm("	BEQ 1f		");
-	asm("	SUB r0, #1	");
-	asm("	B 1b		");
-	asm("1:				");
-	asm("	BX lr		");
+	uint8_t i;
+	uint8_t n;
+	for(i=0; i<7; i++)
+	{
+		n = t;
+		while(n--){}
+	}
 }
 
 void SC1602_WaitMs(uint8_t t)
 {
-	SysTimer_WaitMs(t);
+	uint16_t i;
+	while(t--)
+	{
+		for(i=0; i<6400-1; i++){}
+	}
 }
 
 enum
@@ -38,22 +39,20 @@ enum
 
 typedef struct SC1602_PORT
 {
-	volatile uint32_t* incon;
-	volatile uint32_t* dir;
-	volatile uint32_t* data;
-	uint8_t   incon_value;
+	volatile uint8_t* pu;
+	volatile uint8_t* data;
 	uint8_t   bit;
-	uint8_t   reserve[2];
+	uint8_t   reserve[1];
 }SC1602_PORT;
 
 const static SC1602_PORT SC1602[SC1602_PORT_NUM]=
 {
-	{ &LPC_IOCON->PIO2_3,  &LPC_GPIO2->DIR, &LPC_GPIO2->DATA, 0xD0,  3, {0,0} }, // E	PIO2_3
-	{ &LPC_IOCON->PIO2_6,  &LPC_GPIO2->DIR, &LPC_GPIO2->DATA, 0xD0,  6, {0,0} }, // RS	PIO2_6
-	{ &LPC_IOCON->PIO2_7,  &LPC_GPIO2->DIR, &LPC_GPIO2->DATA, 0xD0,  7, {0,0} }, // DB4	PIO2_7
-	{ &LPC_IOCON->PIO2_8,  &LPC_GPIO2->DIR, &LPC_GPIO2->DATA, 0xD0,  8, {0,0} }, // DB5	PIO2_8
-	{ &LPC_IOCON->PIO2_9,  &LPC_GPIO2->DIR, &LPC_GPIO2->DATA, 0xD0,  9, {0,0} }, // DB6	PIO2_9
-	{ &LPC_IOCON->PIO2_10, &LPC_GPIO2->DIR, &LPC_GPIO2->DATA, 0xD0, 10, {0,0} }  // DB7	PIO2_10
+	{ &PM5,  &P5, 4, {0} }, // E	P54
+	{ &PM5,  &P5, 5, {0} }, // RS	P55
+	{ &PM5,  &P5, 3, {0} }, // DB4	P53
+	{ &PM5,  &P5, 2, {0} }, // DB5	P52
+	{ &PM5,  &P5, 1, {0} }, // DB6	P51
+	{ &PM5,  &P5, 0, {0} }  // DB7	P50
 };
 
 #define SC1602_H(port) (*SC1602[(port)].data  |= 1 << SC1602[(port)].bit)
@@ -64,8 +63,7 @@ void SC1602_InitIO( void )
 	uint8_t i;
 	for(i=0; i<SC1602_PORT_NUM; i++)
 	{
-		*SC1602[i].incon  = SC1602[i].incon_value;
-		*SC1602[i].dir   |= 1 << SC1602[i].bit;
+		*SC1602[i].pu    &= ~(1 << SC1602[i].bit);
 		*SC1602[i].data  &= ~(1 << SC1602[i].bit);
 	}
 }
